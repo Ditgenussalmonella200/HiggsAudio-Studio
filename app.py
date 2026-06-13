@@ -306,7 +306,8 @@ CSS = """
 .gradio-container input[type=range] { accent-color: #7c3aed; }
 /* Теги-чипы: ширина по тексту, перенос, без растяжения и обрезки */
 .tagbtn { flex: 0 0 auto !important; min-width: 0 !important; width: auto !important; }
-.tagbtn button { white-space: nowrap !important; padding: 4px 12px !important; font-size: 0.82em !important; }
+.tagbtn button { white-space: pre-line !important; line-height: 1.15 !important; height: auto !important; min-height: 0 !important; text-align: center !important; padding: 5px 11px !important; font-size: 0.8em !important; }
+.tagbtn button > * { display: block; }
 """
 
 import json as _json
@@ -329,6 +330,7 @@ TAG_DESC = {
     "screaming": "Крик (ааа)", "burping": "Отрыжка", "humming": "Мычание (ммм)",
     "sigh": "Вздох (эх)", "sniff": "Шмыганье носом", "sneeze": "Чихание (апчхи)",
 }
+TAG_RU = {k: v.split(",")[0].split(" (")[0].strip() for k, v in TAG_DESC.items()}
 _CAT_NAMES = {"emotion": "😊 Эмоции (в начало предложения)", "prosody": "🎵 Просодия",
               "style": "🎭 Стиль (в начало)", "sfx": "🔊 Звуки (по месту, рядом со звукоподражанием)"}
 TAGS_LEGEND_MD = "\n\n".join(
@@ -342,7 +344,7 @@ DARK_JS = ("""
       sessionStorage.setItem('_hgs_dark','1'); u.searchParams.set('__theme','dark'); window.location.replace(u.href); return;
     } } catch(e){}
   const TD = __TAGDESC__;
-  const apply = () => document.querySelectorAll('button').forEach(b => { const t=(b.textContent||'').trim(); if(TD[t]) b.title = TD[t]; });
+  const apply = () => document.querySelectorAll('.tagbtn button').forEach(b => { const k=(b.textContent||'').trim().split(/[\\s\\n]+/).find(x => TD[x]); if(k) b.title = TD[k]; });
   apply(); setInterval(apply, 1200);
 }
 """).replace("__TAGDESC__", _json.dumps(TAG_DESC, ensure_ascii=False))
@@ -698,14 +700,14 @@ def build():
                     gr.Markdown(f"**{clabel}**")
                     with gr.Row():
                         for val in sorted(dr.WHITELIST[cat]):
-                            gr.Button(val, size="sm", elem_classes=["tagbtn"]).click(
+                            gr.Button(f"{TAG_RU.get(val, val)}\n{val}", size="sm", elem_classes=["tagbtn"]).click(
                                 lambda t, c=cat, v=val: (t or "") + f"<|{c}:{v}|>", [e_text], [e_text])
                 with gr.Row():
                     e_enrich = gr.Button(T("enrich"), variant="secondary")
                     e_btn = gr.Button(T("generate"), variant="primary")
                 e_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
                 gr.Examples(EXPR_EXAMPLES, inputs=[e_text], label=T("examples"))
-                with gr.Accordion(T("tags_help"), open=False):
+                with gr.Accordion(T("tags_help"), open=True):
                     gr.Markdown(TAGS_LEGEND_MD)
                 e_enrich.click(cb_enrich, [e_text, model_dd], [e_text])
                 e_btn.click(cb_expr, [e_text, model_dd, e_auto], [e_out, e_text])
