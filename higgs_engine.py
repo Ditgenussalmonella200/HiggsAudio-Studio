@@ -44,13 +44,14 @@ def set_precision(p):
 
 
 def auto_precision(vram_gb, device):
-    # 4-бит (bnb nf4) по умолчанию. Приоритет: UI-выбор > env HIGGS_TTS_PRECISION > дефолт.
+    # bf16 по умолчанию (чище; на 24 ГБ влезает свободно). nf4/8bit — выбором в UI.
+    # Приоритет: UI-выбор > env HIGGS_TTS_PRECISION > дефолт.
     pick = _forced_precision or os.environ.get("HIGGS_TTS_PRECISION", "").strip().lower()
     if pick in ("bf16", "8bit", "4bit"):
         return pick if device == "cuda" else "cpu"
     if device == "cpu":
         return "cpu"
-    return "4bit"
+    return "bf16"
 
 
 def get_tts(precision=None):

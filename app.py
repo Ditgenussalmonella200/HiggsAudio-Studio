@@ -631,8 +631,8 @@ def build():
     with gr.Blocks(title=APP_NAME) as demo:
         gr.HTML(T("brand_header_html"))
         model_dd = gr.Dropdown(MODEL_CHOICES, value=dr.DEFAULT_MODEL, label=T("director_model"))
-        quant_dd = gr.Dropdown([("4-bit (nf4) — рекоменд.", "4bit"), ("8-bit", "8bit"), ("bf16 — макс. качество", "bf16")],
-                               value="4bit", label=T("quant"))
+        quant_dd = gr.Dropdown([("bf16 — макс. качество (дефолт)", "bf16"), ("4-bit (nf4) — эконом. VRAM", "4bit"), ("8-bit", "8bit")],
+                               value="bf16", label=T("quant"))
         quant_dd.change(lambda p: eng.set_precision(p), [quant_dd], None)
 
         with gr.Tabs():
