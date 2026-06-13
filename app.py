@@ -784,8 +784,25 @@ def build():
     return demo
 
 
+def prewarm():
+    """Компиляция обоих путей (обычный + клон) в ГЛАВНОМ потоке до старта сервера —
+    первая компиляция в рабочем потоке gradio роняет процесс (особенно на клон-пути)."""
+    if eng._MOCK:
+        return
+    try:
+        print("[prewarm] прогрев + компиляция в главном потоке (~1-3 мин, разово)...", flush=True)
+        eng.generate("Прогрев системы озвучки.")
+        vs = scan_voices()
+        if vs:
+            eng.generate("Прогрев клонирования голоса.", ref_audio=voice_path(vs[0]))
+        print("[prewarm] готово — генерации будут быстрыми и стабильными", flush=True)
+    except Exception as e:
+        print(f"[prewarm] пропущен ({e})", flush=True)
+
+
 if __name__ == "__main__":
     print(f"[{APP_NAME}] {DEVICE_INFO}")
+    prewarm()
     build().queue(default_concurrency_limit=1).launch(
         server_port=None,
         inbrowser=(not eng._MOCK and os.environ.get("NO_AUTO_BROWSER", "").lower() not in ("1", "true", "yes")),

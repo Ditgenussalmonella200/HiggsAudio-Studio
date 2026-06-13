@@ -92,14 +92,20 @@ def get_tts(precision=None):
         _model.get_audio_codec()  # прогрев fp32-кодека
     except Exception:
         pass
-    # torch.compile бэкбона: ~2.4x на decode-шаге (dynamic=True — reduce-overhead/CUDA-графы
-    # несовместимы с динамическим KV-кэшем). Нужны Python-заголовки (install.bat ставит dev.msi);
-    # при отсутствии/ошибке — graceful fallback на некомпилированную модель.
+    if device == "cuda":
+        try:
+            torch.set_float32_matmul_precision("high")  # TF32 — безопасно и бесплатно
+        except Exception:
+            pass
+    # torch.compile бэкбона: ~2.4x (dynamic=True). КРИТИЧНО: компиляция должна происходить в ГЛАВНОМ
+    # потоке (прогрев на старте, см. prewarm() в app.py) — компиляция dynamo/inductor в рабочем потоке
+    # gradio роняет процесс (особенно на клон-пути). Нужны Python-заголовки (install.bat ставит dev.msi).
     if device == "cuda" and precision == "bf16" and os.environ.get("HIGGS_NO_COMPILE", "").lower() not in ("1", "true", "yes"):
         try:
-            torch.set_float32_matmul_precision("high")
+            import torch._dynamo
+            torch._dynamo.config.suppress_errors = True  # сбой компиляции в потоке → откат на eager, НЕ краш
             _model.model = torch.compile(_model.model, dynamic=True)
-            print("[higgs] torch.compile (dynamic) ВКЛ — первая генерация дольше (компиляция), далее ~2x быстрее")
+            print("[higgs] torch.compile (dynamic) ВКЛ — ~2x (прогрев компиляции на старте)")
         except Exception as e:
             print(f"[higgs] torch.compile недоступен ({e}); без компиляции")
     return _model
