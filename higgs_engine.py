@@ -34,13 +34,14 @@ def device_info():
 
 
 def auto_precision(vram_gb, device):
+    # 4-бит (bnb nf4) по умолчанию — экономит VRAM (рядом грузится GGUF-режиссёр).
+    # Можно переопределить через env HIGGS_TTS_PRECISION = bf16 / 8bit / 4bit.
+    override = os.environ.get("HIGGS_TTS_PRECISION", "").strip().lower()
+    if override in ("bf16", "8bit", "4bit"):
+        return override if device == "cuda" else "cpu"
     if device == "cpu":
         return "cpu"
-    if vram_gb < 6:
-        return "4bit"
-    if vram_gb < 12:
-        return "8bit"
-    return "bf16"
+    return "4bit"
 
 
 def get_tts(precision=None):
