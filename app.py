@@ -432,7 +432,7 @@ def parse_script(script):
     return out
 
 
-def _chunk(text, max_chars=300):
+def _chunk(text, max_chars=120):
     """Длинный текст → куски (абзацы; длинные — по предложениям) для long-form."""
     text = (text or "").strip()
     if not text:
