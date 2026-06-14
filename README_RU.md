@@ -10,7 +10,7 @@
 
 **[English](README.md)** · **[Русский](README_RU.md)**
 
-<img src="docs/screenshot-ru.png" alt="Higgs Audio Studio — русский интерфейс" width="49%"/> <img src="docs/screenshot-en.png" alt="Higgs Audio Studio — английский интерфейс" width="49%"/>
+<img src="docs/screenshot-ru.png" alt="Higgs Audio Studio — русский интерфейс" width="600"/>
 
 </div>
 
