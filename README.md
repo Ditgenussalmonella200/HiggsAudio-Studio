@@ -3,6 +3,12 @@
 [![Stars](https://img.shields.io/github/stars/timoncool/HiggsAudio-Studio?style=social)](https://github.com/timoncool/HiggsAudio-Studio/stargazers)
 [![License](https://img.shields.io/badge/license-Research%20%26%20Non--Commercial-orange)](#лицензия)
 
+> 🚀 **Установка в один клик через [Pinokio](https://pinokio.co) (кроссплатформенно):**
+> [![Install on Pinokio](https://img.shields.io/badge/Install_on-Pinokio-7c3aed?style=flat-square)](https://pinokio.co/item?uri=https://github.com/timoncool/HiggsAudio-Studio-pinokio)
+> [![Open in Pinokio](https://img.shields.io/badge/Open_in-Pinokio-6d28d9?style=flat-square)](https://beta.pinokio.co/apps/github-com-timoncool-higgsaudio-studio-pinokio)
+>
+> Windows / Linux (x64 & aarch64) / macOS · NVIDIA / AMD / CPU, без `install.bat`. Лаунчер: **[timoncool/HiggsAudio-Studio-pinokio](https://github.com/timoncool/HiggsAudio-Studio-pinokio)**
+
 **Портативная локальная озвучка на базе [Higgs Audio v3 TTS](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b)** — экспрессивная речь на 100+ языках (русский в топ-тире), zero-shot клонирование голоса, AI-режиссёр текста и режимы **Подкаст** и **Аудиокнига**. Один клик — установка, 100% оффлайн, NVIDIA GPU.
 
 Всё живёт внутри папки: Python, зависимости, модели, кэш. Ничего не ставится в систему. Удалил папку — удалил приложение.
