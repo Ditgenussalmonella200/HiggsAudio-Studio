@@ -287,12 +287,7 @@ CSS = """
 .lang-btn:hover { background:rgba(255,255,255,0.3); }
 .lang-btn img { margin:0 !important; vertical-align:middle !important; }
 .tabs > div[role="tablist"] > button, .tab-nav > button { flex:1 !important; text-align:center !important; }
-.spk-block { background: rgba(124,58,237,0.06); border:1px solid rgba(124,58,237,0.25); border-radius:12px; padding:10px; margin:6px 0;
-  flex:1 1 0 !important; min-width:0 !important; overflow:hidden; }
-/* Фикс «бешеного мигания» вкладок Подкаст/Аудиокнига: длинный waveform референса переполнял
-   flex-блок по горизонтали → мигал скролл-бар → бесконечная перерисовка. Запрещаем переполнение. */
-.spk-block * { min-width:0 !important; }
-.spk-block canvas, .spk-block .waveform-container, .spk-block .scroll { max-width:100% !important; }
+.spk-block { background: rgba(124,58,237,0.06); border:1px solid rgba(124,58,237,0.25); border-radius:12px; padding:10px; margin:6px 0; }
 .donate-wrap { position:relative; display:inline-block; }
 .donate-wrap > summary.donate-btn { list-style:none; cursor:pointer; }
 .donate-wrap > summary.donate-btn::-webkit-details-marker { display:none; }
@@ -684,18 +679,19 @@ def _speaker_blocks():
         refresh = gr.Button(T("refresh_voices"), size="sm", scale=0)
     choices = [OWN_FILE] + scan_voices()
     blocks, audios, texts, pres = [], [], [], []
-    with gr.Row():
-        for i in range(MAX_SPK):
-            with gr.Group(visible=(i < 2), elem_classes="spk-block") as bl:
-                gr.Markdown(f"**Speaker {i}**")
-                pre = gr.Dropdown(choices, value=OWN_FILE, label=T("voice_preset"))
-                au = gr.Audio(label=T("ref_voice"), type="filepath", sources=["upload", "microphone"])
-                tx = gr.Textbox(label=T("ref_text"), lines=1, placeholder=T("ph_clone_tr"))
-                pre.change(cb_preset, [pre], [au, tx])
-            blocks.append(bl)
-            audios.append(au)
-            texts.append(tx)
-            pres.append(pre)
+    # Блоки дикторов — вертикально, друг под другом (как в Qwen3-TTS Multi-speaker).
+    # Side-by-side в gr.Row давал мигание: тяжёлые waveform конкурировали по ширине.
+    for i in range(MAX_SPK):
+        with gr.Group(visible=(i < 2), elem_classes="spk-block") as bl:
+            gr.Markdown(f"**Speaker {i}**")
+            pre = gr.Dropdown(choices, value=OWN_FILE, label=T("voice_preset"))
+            au = gr.Audio(label=T("ref_voice"), type="filepath", sources=["upload", "microphone"])
+            tx = gr.Textbox(label=T("ref_text"), lines=1, placeholder=T("ph_clone_tr"))
+            pre.change(cb_preset, [pre], [au, tx])
+        blocks.append(bl)
+        audios.append(au)
+        texts.append(tx)
+        pres.append(pre)
     num.change(lambda n: [gr.update(visible=(i < n)) for i in range(MAX_SPK)], [num], blocks)
     refresh.click(lambda: [gr.update(choices=[OWN_FILE] + scan_voices()) for _ in range(MAX_SPK)], None, pres)
     return num, audios, texts
@@ -798,12 +794,13 @@ def build():
                 p_num, p_audios, p_texts = _speaker_blocks()
                 p_topic = gr.Textbox(label=T("topic"), placeholder=T("ph_topic"), lines=2)
                 gr.Examples(POD_TOPICS, inputs=[p_topic], label=T("examples"))
+                p_model = gr.Dropdown(MODEL_CHOICES, value=dr.DEFAULT_MODEL, label=T("director_model"))
                 p_script_btn = gr.Button(T("make_script"), variant="secondary")
                 p_script = gr.Textbox(label=T("script"), placeholder=T("ph_script"), lines=9)
                 p_btn = gr.Button(T("synth"), variant="primary", size="lg")
                 p_stop = gr.Button(T("stop"), variant="stop")
                 p_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
-                p_script_btn.click(cb_podcast_script, [p_topic, p_num, model_dd], [p_script])
+                p_script_btn.click(cb_podcast_script, [p_topic, p_num, p_model], [p_script])
                 ev_pod = p_btn.click(cb_multi_synth, [p_script] + p_audios + p_texts, p_out)
                 p_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_pod])
 
@@ -814,12 +811,13 @@ def build():
                 b_num, b_audios, b_texts = _speaker_blocks()
                 b_text = gr.Textbox(label=T("book_text"), placeholder=T("ph_book"), lines=6)
                 gr.Examples(BOOK_EXAMPLES, inputs=[b_text], label=T("examples"))
+                b_model = gr.Dropdown(MODEL_CHOICES, value=dr.DEFAULT_MODEL, label=T("director_model"))
                 b_markup = gr.Button(T("markup"), variant="secondary")
                 b_script = gr.Textbox(label=T("script"), placeholder=T("ph_script"), lines=9)
                 b_btn = gr.Button(T("synth"), variant="primary", size="lg")
                 b_stop = gr.Button(T("stop"), variant="stop")
                 b_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
-                b_markup.click(cb_book_markup, [b_text, b_num, model_dd], [b_script])
+                b_markup.click(cb_book_markup, [b_text, b_num, b_model], [b_script])
                 ev_book = b_btn.click(cb_multi_synth, [b_script] + b_audios + b_texts, b_out)
                 b_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_book])
 
