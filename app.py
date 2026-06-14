@@ -237,33 +237,17 @@ def T(key):
 HEAD_SCRIPT = """
 <script>
 (function(){
-  function getLang(){ try { return new URL(window.location).searchParams.get('__lang') || 'ru'; } catch(e){ return 'ru'; } }
+  // Локаль Gradio = navigator.language (svelte-i18n, читается при инициализации, фолбэк en).
+  // Переопределяем ГЕТТЕРОМ до загрузки бандла; переключение — перезагрузкой по ?__lang=.
+  // (Стор локали внутренний/минифицированный — дёргать его по имени нельзя, имена меняются меж версий.)
   try {
-    var lang = getLang();
-    Object.defineProperty(navigator, 'language', {value: lang, configurable: true});
-    Object.defineProperty(navigator, 'languages', {value: [lang], configurable: true});
-    document.documentElement.lang = lang;
+    var lang = new URL(window.location).searchParams.get('__lang');
+    if (lang) {
+      Object.defineProperty(navigator, 'language',  {get: function(){ return lang; }, configurable: true});
+      Object.defineProperty(navigator, 'languages', {get: function(){ return [lang]; }, configurable: true});
+      document.documentElement.lang = lang;
+    }
   } catch(e) {}
-  function applyLang(){
-    try {
-      var lang = getLang();
-      var linkEl = document.querySelector('link[href*="i18n-"][rel*="preload"]');
-      if (!linkEl) { setTimeout(applyLang, 200); return; }
-      import(linkEl.href).then(function(mod){
-        if (!mod || typeof mod.J !== 'function') return;
-        var t = function(){ try { mod.J(lang); window.dispatchEvent(new Event('languagechange')); } catch(e){} };
-        t(); setTimeout(t, 300); setTimeout(t, 1000); setTimeout(t, 2000);
-      }).catch(function(){});
-    } catch(e) {}
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){ setTimeout(applyLang, 100); });
-  } else { setTimeout(applyLang, 100); }
-  document.addEventListener('click', function(e){
-    try { if (e.target && e.target.closest && e.target.closest('[role=tablist], .tab-nav')) {
-      setTimeout(applyLang, 120); setTimeout(applyLang, 450);
-    } } catch(_){}
-  }, true);
 })();
 </script>
 """
