@@ -237,17 +237,44 @@ def T(key):
 HEAD_SCRIPT = """
 <script>
 (function(){
-  // Локаль Gradio = navigator.language (svelte-i18n, читается при инициализации, фолбэк en).
-  // Переопределяем ГЕТТЕРОМ до загрузки бандла; переключение — перезагрузкой по ?__lang=.
-  // (Стор локали внутренний/минифицированный — дёргать его по имени нельзя, имена меняются меж версий.)
+  var lang;
+  try { lang = new URL(window.location).searchParams.get('__lang'); } catch(e) { lang = null; }
+  if (!lang) return;  // нет ?__lang= → язык браузера (дефолт Gradio)
+  // navigator override (геттером — стабильный API) для встроенных строк Gradio
   try {
-    var lang = new URL(window.location).searchParams.get('__lang');
-    if (lang) {
-      Object.defineProperty(navigator, 'language',  {get: function(){ return lang; }, configurable: true});
-      Object.defineProperty(navigator, 'languages', {get: function(){ return [lang]; }, configurable: true});
-      document.documentElement.lang = lang;
-    }
+    Object.defineProperty(navigator, 'language',  {get: function(){ return lang; }, configurable: true});
+    Object.defineProperty(navigator, 'languages', {get: function(){ return [lang]; }, configurable: true});
+    document.documentElement.lang = lang;
   } catch(e) {}
+  // Главный рычаг: writable-стор локали svelte-i18n. Находим ПО ФОРМЕ (subscribe+set, значение —
+  // строка-локаль), НЕ по минифицированному имени (оно меняется между сборками Gradio). set() ретранслирует UI.
+  var sp = null;
+  function getStore(){
+    if (sp) return sp;
+    var link = document.querySelector('link[href*="i18n-"]');
+    if (!link) return null;
+    sp = import(link.href).then(function(m){
+      for (var k in m){ var v = m[k];
+        try { if (v && typeof v.subscribe === 'function' && typeof v.set === 'function'){
+          var c; var u = v.subscribe(function(x){ c = x; }); if (typeof u === 'function') u();
+          if (typeof c === 'string' && /^[a-z]{2}(-[A-Za-z]+)?$/.test(c)) return v;
+        }} catch(e) {}
+      }
+      return null;
+    }).catch(function(){ return null; });
+    return sp;
+  }
+  function apply(){
+    var p = getStore(); if (!p) return;
+    p.then(function(s){ if (s){ try { s.set(lang); window.dispatchEvent(new Event('languagechange')); } catch(e) {} } });
+  }
+  var n = 0, iv = setInterval(function(){ apply(); if (++n > 30) clearInterval(iv); }, 120);
+  apply();
+  document.addEventListener('click', function(e){
+    try { if (e.target && e.target.closest && e.target.closest('[role=tablist],.tab-nav,[role=tab]')){
+      setTimeout(apply, 60); setTimeout(apply, 250);
+    }} catch(_) {}
+  }, true);
 })();
 </script>
 """
