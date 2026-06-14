@@ -169,9 +169,11 @@ _RU = {
     "tab_tts": "🎙️ Озвучка", "tab_expr": "🎭 Экспрессия + Режиссёр", "tab_clone": "🧬 Клонирование",
     "tab_pod": "🎬 Подкаст", "tab_book": "📚 Аудиокнига", "tab_batch": "📦 Пакет",
     "text": "Текст", "ph_text": "Введите текст… можно вставлять теги: <|emotion:elation|>Привет!",
-    "generate": "🔊 Озвучить", "result": "Результат", "advanced": "Доп. настройки",
+    "generate": "🔊 Озвучить", "stop": "⏹ Стоп", "result": "Результат", "advanced": "Доп. настройки",
     "director_model": "Модель режиссёра (для обогащения / диалогов)",
-    "quant": "Квантизация Higgs (4-bit nf4 = меньше VRAM)",
+    "quant": "Квантизация Higgs ⚗️ (экспериментально)",
+    "quant_info": "⚗️ Экспериментально: квантизация (4/8-bit) экономит VRAM, но качество звука заметно страдает. Для лучшего качества оставьте bf16.",
+    "out_format": "Формат вывода",
     "cat_emotion": "😊 Эмоции (на предложение)", "cat_prosody": "🎵 Просодия", "cat_style": "🎭 Стиль", "cat_sfx": "🔊 Звуки (по месту в тексте)",
     "download_all": "⬇️ Скачать все 700+",
     "enrich": "✨ Обогатить текст", "auto_enrich": "✨ Авто-обогащение промпта режиссёром",
@@ -198,9 +200,11 @@ _EN = {
     "tab_tts": "🎙️ TTS", "tab_expr": "🎭 Expressive + Director", "tab_clone": "🧬 Cloning",
     "tab_pod": "🎬 Podcast", "tab_book": "📚 Audiobook", "tab_batch": "📦 Batch",
     "text": "Text", "ph_text": "Type text… you can insert tags: <|emotion:elation|>Hi!",
-    "generate": "🔊 Generate", "result": "Result", "advanced": "Advanced",
+    "generate": "🔊 Generate", "stop": "⏹ Stop", "result": "Result", "advanced": "Advanced",
     "director_model": "Director model (enrich / dialogues)",
-    "quant": "Higgs quantization (4-bit nf4 = less VRAM)",
+    "quant": "Higgs quantization ⚗️ (experimental)",
+    "quant_info": "⚗️ Experimental: quantization (4/8-bit) saves VRAM but audibly degrades quality. Keep bf16 for best quality.",
+    "out_format": "Output format",
     "cat_emotion": "😊 Emotion (per sentence)", "cat_prosody": "🎵 Prosody", "cat_style": "🎭 Style", "cat_sfx": "🔊 Sounds (inline)",
     "download_all": "⬇️ Download all 700+",
     "enrich": "✨ Enrich text", "auto_enrich": "✨ Auto-enrich prompt with director",
@@ -283,7 +287,12 @@ CSS = """
 .lang-btn:hover { background:rgba(255,255,255,0.3); }
 .lang-btn img { margin:0 !important; vertical-align:middle !important; }
 .tabs > div[role="tablist"] > button, .tab-nav > button { flex:1 !important; text-align:center !important; }
-.spk-block { background: rgba(124,58,237,0.06); border:1px solid rgba(124,58,237,0.25); border-radius:12px; padding:10px; margin:6px 0; }
+.spk-block { background: rgba(124,58,237,0.06); border:1px solid rgba(124,58,237,0.25); border-radius:12px; padding:10px; margin:6px 0;
+  flex:1 1 0 !important; min-width:0 !important; overflow:hidden; }
+/* Фикс «бешеного мигания» вкладок Подкаст/Аудиокнига: длинный waveform референса переполнял
+   flex-блок по горизонтали → мигал скролл-бар → бесконечная перерисовка. Запрещаем переполнение. */
+.spk-block * { min-width:0 !important; }
+.spk-block canvas, .spk-block .waveform-container, .spk-block .scroll { max-width:100% !important; }
 .donate-wrap { position:relative; display:inline-block; }
 .donate-wrap > summary.donate-btn { list-style:none; cursor:pointer; }
 .donate-wrap > summary.donate-btn::-webkit-details-marker { display:none; }
@@ -369,12 +378,30 @@ BOOK_EXAMPLES = [["Старый маяк молчал уже много лет. 
 # ----------------------------------------------------------------------------
 # Хелперы
 # ----------------------------------------------------------------------------
+_OUT_FORMAT = "mp3"  # как в VoxCPM2: компактный mp3 по умолчанию
+# формат → (контейнер soundfile, subtype). MP3/OGG/FLAC/WAV поддержаны libsndfile 0.14 в сборке.
+_FMT = {"wav": ("WAV", None), "mp3": ("MP3", None), "flac": ("FLAC", None), "ogg": ("OGG", "VORBIS")}
+
+
+def set_out_format(f):
+    global _OUT_FORMAT
+    _OUT_FORMAT = f if f in _FMT else "wav"
+
+
 def _save(sr, wav, prefix="tts"):
     import soundfile as sf
     if wav is None or len(wav) == 0:
         return None
-    path = OUTPUT_DIR / f"{prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
-    sf.write(str(path), wav, sr)
+    fmt = _OUT_FORMAT
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    container, subtype = _FMT.get(fmt, ("WAV", None))
+    path = OUTPUT_DIR / f"{prefix}_{stamp}.{fmt}"
+    try:
+        sf.write(str(path), wav, sr, format=container, subtype=subtype)
+    except Exception as e:
+        print(f"[save] формат {fmt} не записался ({e}) → wav")
+        path = OUTPUT_DIR / f"{prefix}_{stamp}.wav"
+        sf.write(str(path), wav, sr)
     return str(path)
 
 
@@ -562,6 +589,7 @@ def _maybe_enrich(text, model, auto):
 
 
 def cb_tts(text, model, auto, temperature, top_p, top_k, max_new, seed):
+    eng.clear_cancel()
     text = _maybe_enrich(text, model, auto)
     sr, wav = _speak(text, temperature=temperature, top_p=top_p, top_k=top_k,
                      max_new_tokens=max_new, seed=seed)
@@ -574,6 +602,7 @@ def cb_enrich(text, model):
 
 
 def cb_expr(text, model, auto):
+    eng.clear_cancel()
     text = _maybe_enrich(text, model, auto)
     sr, wav = _speak(text)
     _save(sr, wav, "expr")
@@ -581,6 +610,7 @@ def cb_expr(text, model, auto):
 
 
 def cb_clone(text, model, auto, ref_audio, ref_text, preset, temperature, top_p, seed):
+    eng.clear_cancel()
     text = _maybe_enrich(text, model, auto)
     ref = ref_audio or (voice_path(preset) if preset and preset != OWN_FILE else None)
     sr, wav = _speak(text, ref_audio=ref, ref_text=ref_text, temperature=temperature, top_p=top_p, seed=seed)
@@ -599,6 +629,7 @@ def cb_book_markup(text, num, model):
 def cb_multi_synth(script, a0, a1, a2, a3, t0, t1, t2, t3, progress=gr.Progress()):
     """Парсим 'Speaker N:' → синтез каждой реплики голосом диктора N → склейка с паузой 0.3с."""
     import numpy as np
+    eng.clear_cancel()
     audios = [a0, a1, a2, a3]
     texts = [t0, t1, t2, t3]
     turns = [(sid, txt) for sid, txt in parse_script(script) if txt.strip()]
@@ -607,6 +638,8 @@ def cb_multi_synth(script, a0, a1, a2, a3, t0, t1, t2, t3, progress=gr.Progress(
     parts = []
     sil = np.zeros(int(eng.SR * 0.3), np.float32)
     for i, (sid, txt) in enumerate(turns):
+        if eng.cancelled():
+            break
         progress((i + 1) / len(turns), desc=f"{i + 1}/{len(turns)} · Speaker {sid}")
         ref = audios[sid] if 0 <= sid < MAX_SPK else None
         rt = (texts[sid] if 0 <= sid < MAX_SPK else None) or None
@@ -622,9 +655,13 @@ def cb_multi_synth(script, a0, a1, a2, a3, t0, t1, t2, t3, progress=gr.Progress(
 
 
 def cb_batch(texts, model, auto, progress=gr.Progress()):
+    eng.clear_cancel()
     lines = [t.strip() for t in (texts or "").splitlines() if t.strip()]
     log, paths = [], []
     for i, line in enumerate(lines):
+        if eng.cancelled():
+            yield "\n".join(log) + "\n\n⏹ Остановлено / Stopped.", paths
+            return
         progress((i + 1) / max(len(lines), 1), desc=f"{i + 1}/{len(lines)}")
         if auto:
             line = dr.enrich(line, model)
@@ -668,9 +705,13 @@ def build():
     with gr.Blocks(title=APP_NAME) as demo:
         gr.HTML(T("brand_header_html"))
         model_dd = gr.Dropdown(MODEL_CHOICES, value=dr.DEFAULT_MODEL, label=T("director_model"))
-        quant_dd = gr.Dropdown([("bf16 — макс. качество (дефолт)", "bf16"), ("4-bit (nf4) — эконом. VRAM", "4bit"), ("8-bit", "8bit")],
-                               value="bf16", label=T("quant"))
+        quant_dd = gr.Dropdown([("bf16 — макс. качество (дефолт)", "bf16"),
+                                ("4-bit (nf4) ⚗️ эксперим. — качество ниже", "4bit"),
+                                ("8-bit ⚗️ эксперим. — качество ниже", "8bit")],
+                               value="bf16", label=T("quant"), info=T("quant_info"))
         quant_dd.change(lambda p: eng.set_precision(p), [quant_dd], None)
+        fmt_dd = gr.Radio(["mp3", "wav", "flac", "ogg"], value="mp3", label=T("out_format"))
+        fmt_dd.change(set_out_format, [fmt_dd], None)
 
         with gr.Tabs():
             # 1. Озвучка
@@ -686,10 +727,12 @@ def build():
                             t_seed = gr.Number(-1, label=T("seed"), precision=0)
                         t_auto = gr.Checkbox(label=T("auto_enrich"), value=False)
                         t_btn = gr.Button(T("generate"), variant="primary", size="lg")
+                        t_stop = gr.Button(T("stop"), variant="stop")
                     t_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
                 gr.Examples(TTS_EXAMPLES, inputs=[t_text], label=T("examples"))
-                t_btn.click(cb_tts, [t_text, model_dd, t_auto, t_temp, t_top_p, t_top_k, t_max, t_seed],
-                            [t_out, t_text])
+                ev_tts = t_btn.click(cb_tts, [t_text, model_dd, t_auto, t_temp, t_top_p, t_top_k, t_max, t_seed],
+                                     [t_out, t_text])
+                t_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_tts])
 
             # 2. Экспрессия + Режиссёр
             with gr.Tab(T("tab_expr")):
@@ -705,12 +748,14 @@ def build():
                 with gr.Row():
                     e_enrich = gr.Button(T("enrich"), variant="secondary")
                     e_btn = gr.Button(T("generate"), variant="primary")
+                e_stop = gr.Button(T("stop"), variant="stop")
                 e_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
                 gr.Examples(EXPR_EXAMPLES, inputs=[e_text], label=T("examples"))
                 with gr.Accordion(T("tags_help"), open=True):
                     gr.Markdown(TAGS_LEGEND_MD)
                 e_enrich.click(cb_enrich, [e_text, model_dd], [e_text])
-                e_btn.click(cb_expr, [e_text, model_dd, e_auto], [e_out, e_text])
+                ev_expr = e_btn.click(cb_expr, [e_text, model_dd, e_auto], [e_out, e_text])
+                e_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_expr])
 
             # 3. Клонирование
             with gr.Tab(T("tab_clone")):
@@ -727,6 +772,7 @@ def build():
                         c_seed = gr.Number(-1, label=T("seed"), precision=0)
                         c_auto = gr.Checkbox(label=T("auto_enrich"), value=False)
                         c_btn = gr.Button(T("generate"), variant="primary", size="lg")
+                        c_stop = gr.Button(T("stop"), variant="stop")
                     c_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
                 with gr.Accordion(T("cloud_title"), open=False):
                     cl_status = gr.Textbox(label=T("cloud_status"), interactive=False)
@@ -741,8 +787,9 @@ def build():
                 cl_load.click(cb_load_cloud, None, [cl_status, cl_voices])
                 cl_all.click(cb_download_all_cloud, None, [cl_status, c_preset])
                 cl_dl.click(cb_download_voices, [cl_voices], [cl_status, c_preset])
-                c_btn.click(cb_clone, [c_text, model_dd, c_auto, c_ref, c_ref_text, c_preset, c_temp, c_top_p, c_seed],
-                            [c_out, c_text])
+                ev_clone = c_btn.click(cb_clone, [c_text, model_dd, c_auto, c_ref, c_ref_text, c_preset, c_temp, c_top_p, c_seed],
+                                       [c_out, c_text])
+                c_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_clone])
 
             # 4. Подкаст (мульти-спикер, формат Speaker N:)
             with gr.Tab(T("tab_pod")):
@@ -754,9 +801,11 @@ def build():
                 p_script_btn = gr.Button(T("make_script"), variant="secondary")
                 p_script = gr.Textbox(label=T("script"), placeholder=T("ph_script"), lines=9)
                 p_btn = gr.Button(T("synth"), variant="primary", size="lg")
+                p_stop = gr.Button(T("stop"), variant="stop")
                 p_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
                 p_script_btn.click(cb_podcast_script, [p_topic, p_num, model_dd], [p_script])
-                p_btn.click(cb_multi_synth, [p_script] + p_audios + p_texts, p_out)
+                ev_pod = p_btn.click(cb_multi_synth, [p_script] + p_audios + p_texts, p_out)
+                p_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_pod])
 
             # 5. Аудиокнига (мульти-спикер: Speaker 0 — рассказчик)
             with gr.Tab(T("tab_book")):
@@ -768,18 +817,22 @@ def build():
                 b_markup = gr.Button(T("markup"), variant="secondary")
                 b_script = gr.Textbox(label=T("script"), placeholder=T("ph_script"), lines=9)
                 b_btn = gr.Button(T("synth"), variant="primary", size="lg")
+                b_stop = gr.Button(T("stop"), variant="stop")
                 b_out = gr.Audio(label=T("result"), type="numpy", autoplay=True)
                 b_markup.click(cb_book_markup, [b_text, b_num, model_dd], [b_script])
-                b_btn.click(cb_multi_synth, [b_script] + b_audios + b_texts, b_out)
+                ev_book = b_btn.click(cb_multi_synth, [b_script] + b_audios + b_texts, b_out)
+                b_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_book])
 
             # 6. Пакет
             with gr.Tab(T("tab_batch")):
                 bt_text = gr.Textbox(label=T("batch_text"), placeholder=T("ph_batch"), lines=6)
                 bt_auto = gr.Checkbox(label=T("auto_enrich"), value=False)
                 bt_btn = gr.Button(T("generate"), variant="primary", size="lg")
+                bt_stop = gr.Button(T("stop"), variant="stop")
                 bt_log = gr.Textbox(label=T("log"), lines=8)
                 bt_files = gr.Files(label=T("result"))
-                bt_btn.click(cb_batch, [bt_text, model_dd, bt_auto], [bt_log, bt_files])
+                ev_batch = bt_btn.click(cb_batch, [bt_text, model_dd, bt_auto], [bt_log, bt_files])
+                bt_stop.click(eng.request_cancel, None, None, queue=False, cancels=[ev_batch])
 
     return demo
 
