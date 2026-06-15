@@ -34,7 +34,7 @@ Built on [Higgs Audio v3 TTS](https://huggingface.co/bosonai/higgs-audio-v3-tts-
 - **📦 Batch** — a list of texts → mass synthesis with a live log.
 - **💾 Output format** — WAV / MP3 / FLAC / OGG; results saved to `output/` with timestamps.
 
-**43 control tags:** 21 emotions, 10 prosody, 3 styles, 9 sounds. **AI director** — switchable model: Qwen3.5-9B (default) / Gemma-3-12B / Qwen3.5-4B, on-the-fly quantization (⚗️ experimental), auto by VRAM. **RU / EN** UI.
+**43 control tags:** 21 emotions, 10 prosody, 3 styles, 9 sounds. **AI director** — switchable GGUF model: Qwen3.5-9B (default, ~5.5 GB) / Qwen3.5-4B (light, ~2.5 GB), runs on GPU via llama.cpp. Higgs TTS quantization is on-the-fly (⚗️ experimental), auto by VRAM. **RU / EN** UI.
 
 ## System Requirements
 
